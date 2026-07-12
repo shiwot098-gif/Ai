@@ -1,7 +1,7 @@
 const API_CONFIG = {
     ENDPOINT: 'https://openrouter.ai/api/v1/chat/completions',
     MODEL: 'google/gemini-2.5-flash',
-    SYSTEM_PROMPT: `You are EthioScholar AI, a helpful educational assistant for Ethiopian students. Help with programming, mathematics, and university courses.`
+    SYSTEM_PROMPT: `You are EthioScholar AI, a helpful educational assistant for Ethiopian students.`
 };
 
 let conversations = JSON.parse(localStorage.getItem('ethioscholar_chats')) || [];
@@ -29,36 +29,39 @@ const dom = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    initializeEventHandlers();
-    renderChatHistory();
+    // ቼክ ለማድረግ ኤለመንቶች መኖራቸውን ማረጋገጫ
+    if (dom.hamburgerBtn) dom.hamburgerBtn.addEventListener('click', () => dom.sidebar.classList.toggle('open'));
+    if (dom.themeToggle) dom.themeToggle.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+    if (dom.themeToggleMobile) dom.themeToggleMobile.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+    if (dom.newChatBtn) dom.newChatBtn.addEventListener('click', startNewConversation);
+    if (dom.clearChatsBtn) dom.clearChatsBtn.addEventListener('click', purgeAllConversations);
     
-    const savedKey = localStorage.getItem('ethioscholar_api_key');
-    if (savedKey) dom.apiKeyInput.value = savedKey;
+    if (dom.userInput) {
+        dom.userInput.addEventListener('input', () => {
+            dom.charCounter.textContent = `${dom.userInput.value.length} / 2000 chars`;
+        });
+    }
+    
+    if (dom.sendBtn) dom.sendBtn.addEventListener('click', executeMessageSubmission);
+    if (dom.openSettingsBtn) dom.openSettingsBtn.addEventListener('click', () => dom.settingsModal.classList.add('open'));
+    if (dom.closeSettingsBtn) dom.closeSettingsBtn.addEventListener('click', () => dom.settingsModal.classList.remove('open'));
+    
+    if (dom.saveKeyBtn) {
+        dom.saveKeyBtn.addEventListener('click', () => {
+            localStorage.setItem('ethioscholar_api_key', dom.apiKeyInput.value.trim());
+            alert('API Key Saved Successfully!');
+            dom.settingsModal.classList.remove('open');
+        });
+    }
 
+    const savedKey = localStorage.getItem('ethioscholar_api_key');
+    if (savedKey && dom.apiKeyInput) dom.apiKeyInput.value = savedKey;
+
+    renderChatHistory();
     if (currentChatId && conversations.find(c => c.id === currentChatId)) {
         loadConversation(currentChatId);
     }
 });
-
-function initializeEventHandlers() {
-    dom.hamburgerBtn.addEventListener('click', () => dom.sidebar.classList.toggle('open'));
-    dom.newChatBtn.addEventListener('click', startNewConversation);
-    dom.clearChatsBtn.addEventListener('click', purgeAllConversations);
-    
-    dom.userInput.addEventListener('input', () => {
-        dom.charCounter.textContent = `${dom.userInput.value.length} / 2000 chars`;
-    });
-    
-    dom.sendBtn.addEventListener('click', executeMessageSubmission);
-    dom.openSettingsBtn.addEventListener('click', () => dom.settingsModal.classList.add('open'));
-    dom.closeSettingsBtn.addEventListener('click', () => dom.settingsModal.classList.remove('open'));
-    
-    dom.saveKeyBtn.addEventListener('click', () => {
-        localStorage.setItem('ethioscholar_api_key', dom.apiKeyInput.value.trim());
-        alert('API Key Saved Successfully!');
-        dom.settingsModal.classList.remove('open');
-    });
-}
 
 function executeMessageSubmission() {
     const key = localStorage.getItem('ethioscholar_api_key');
@@ -136,6 +139,7 @@ function renderMessageBubble(msgObj) {
 }
 
 function renderChatHistory() {
+    if (!dom.chatHistoryList) return;
     dom.chatHistoryList.innerHTML = '';
     conversations.forEach(chat => {
         const item = document.createElement('div');

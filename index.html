@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EthioScholar AI - Your Smart Ethiopian Learning Assistant</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="EthioScholar AI is an advanced educational assistant tailored for Ethiopian students. Get instant help with programming, math, university courses, and scholarships in Amharic and English.">
+    <meta name="keywords" content="Ethiopia, Education, AI Chatbot, Amharic AI, University Exam Prep, Scholarships, Programming Help">
+    <meta name="author" content="EthioScholar AI Team">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="EthioScholar AI - Smart Learning Assistant">
+    <meta property="og:description" content="Get instant educational assistance in Amharic and English.">
+    
+    <!-- PWA Capabilities & Favicon -->
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇪🇹</text></svg>">
+    
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Core Application Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button id="hamburger-btn" aria-label="Toggle Sidebar"><i class="fas fa-bars"></i></button>
+        <div class="mobile-logo">EthioScholar AI</div>
+        <button id="theme-toggle-mobile" aria-label="Toggle Theme"><i class="fas fa-moon"></i></button>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation Component -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <span class="brand-flag">🇪🇹</span>
+                    <div class="brand-text">
+                        <h1>EthioScholar AI</h1>
+                        <p>Your Smart Learning Assistant</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="new-chat-btn" class="btn btn-primary"><i class="fas fa-plus"></i> New Chat</button>
+
+            <div class="history-container">
+                <div class="section-title">Chat History</div>
+                <div id="chat-history-list" class="history-list">
+                    <!-- Dynamic chat entries populated via JavaScript -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="nav-item"><i class="fas fa-moon"></i> <span>Toggle Theme</span></button>
+                <button id="clear-chats-btn" class="nav-item text-danger"><i class="fas fa-trash-alt"></i> <span>Clear Conversations</span></button>
+                <button id="open-about-modal" class="nav-item"><i class="fas fa-info-circle"></i> <span>About & Support</span></button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Interface -->
+        <main class="main-chat">
+            <!-- Centralized Content Area -->
+            <div id="chat-window" class="chat-window">
+                <!-- Welcome View (Shown when no messages exist) -->
+                <div id="welcome-view" class="welcome-container">
+                    <div class="welcome-icon">🇪🇹</div>
+                    <h2>እንኳን ደህና መጡ ወደ EthioScholar AI!</h2>
+                    <p>Welcome! I am your AI educational assistant dedicated to Ethiopian students. Ask me anything about programming, mathematics, university courses, databases, networking, or international scholarships.</p>
+                    
+                    <div class="suggested-grid">
+                        <div class="suggest-card" onclick="setQuickQuestion('Explain Object-Oriented Programming concepts in Amharic with examples.')">
+                            <i class="fas fa-code color-blue"></i>
+                            <h4>OOP in Amharic</h4>
+                            <p>Learn coding concepts explained in your local tongue.</p>
+                        </div>
+                        <div class="suggest-card" onclick="setQuickQuestion('What are the top master\'s scholarship options for Ethiopian students this year?')">
+                            <i class="fas fa-graduation-cap color-green"></i>
+                            <h4>Scholarship Paths</h4>
+                            <p>Find global university options open for applications.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages Stream Container -->
+                <div id="message-stream" class="message-stream"></div>
+            </div>
+
+            <!-- Operational User Input & Control Panel -->
+            <footer class="input-panel">
+                <div class="input-container-wrapper">
+                    <div class="control-bar">
+                        <span id="char-counter" class="char-counter">0 / 2000 chars</span>
+                        <div class="action-utilities">
+                            <button id="voice-input-btn" title="Voice Input (Speech-to-Text)"><i class="fas fa-microphone"></i></button>
+                            <button id="download-chat-btn" title="Download Conversation"><i class="fas fa-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <textarea id="user-input" rows="1" placeholder="Ask a question in Amharic or English... (Type or use voice)" maxlength="2000"></textarea>
+                        <button id="send-btn" aria-label="Send Message"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                <div class="footer-legal">
+                    EthioScholar AI may provide inaccurate info. Double-check important facts.
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modals Architecture (About, Privacy Policy, Contact Support) -->
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="switchModalTab('about')">About</button>
+                <button class="tab-btn" onclick="switchModalTab('privacy')">Privacy Policy</button>
+                <button class="tab-btn" onclick="switchModalTab('contact')">Contact Support</button>
+                <button id="close-modal-btn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="tab-about" class="tab-content active">
+                    <h3>About EthioScholar AI</h3>
+                    <p>EthioScholar AI is an open educational utility constructed to deliver high-quality academic support to Ethiopian high school and university students.</p>
+                    <p>Engineered using pure native web infrastructure for instantaneous load times even over slower mobile data layers across Ethiopian networks.</p>
+                </div>
+                <div id="tab-privacy" class="tab-content">
+                    <h3>Privacy Policy</h3>
+                    <p>Your privacy matters. EthioScholar AI handles your questions with absolute discretion:</p>
+                    <ul>
+                        <li>Conversations are preserved entirely inside your browser's local sandbox environment via Local Storage.</li>
+                        <li>No telemetry, profiling, tracking pixels, or cookie structures are embedded.</li>
+                        <li>API interactions pass directly to the language model processor without long-term server retention pipelines.</li>
+                    </ul>
+                </div>
+                <div id="tab-contact" class="tab-content">
+                    <h3>Contact & Support</h3>
+                    <p>Encountered a bug or have ideas for enhancement? Reach out directly:</p>
+                    <p><i class="fas fa-envelope"></i> Email: support@ethioscholar.edu.et</p>
+                    <p><i class="fab fa-telegram"></i> Telegram Community: @EthioScholarAI_Support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Operational Application Execution Layer -->
+    <script src="script.js"></script>
+</body>
+</html>

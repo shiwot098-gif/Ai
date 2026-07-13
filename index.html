@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EthioScholar AI - Your Smart Ethiopian Learning Assistant</title>
+    <!-- FontAwesome ለኣይኮኖች -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -43,7 +44,7 @@
             </div>
         </aside>
 
-        <!-- Main Chat -->
+        <!-- Main Chat Area -->
         <main class="main-chat">
             <div id="chat-window" class="chat-window">
                 <div id="welcome-view" class="welcome-container">
@@ -70,15 +71,15 @@
 
     <!-- API Setup Modal -->
     <div id="settings-modal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 450px; background: #111827; padding: 20px; border-radius: 12px; margin: auto;">
-            <div style="display:flex; justify-content: space-between; margin-bottom: 15px;">
-                <span style="font-weight:600; color:#2563eb;">🔑 API Key Settings</span>
-                <button id="close-settings-btn" style="background:none; border:none; color:#fff; cursor:pointer; font-size: 1.5rem;">&times;</button>
+        <div class="modal-card">
+            <div class="modal-header">
+                <span>🔑 API Key Settings</span>
+                <button id="close-settings-btn">&times;</button>
             </div>
-            <p style="font-size:0.9rem; margin-bottom:12px; color: #9ca3af;">የእርስዎን የ OpenRouter API Key እዚህ ያስገቡ። ቁልፉ በስልክዎ ላይ ብቻ በምስጢር ይቀመጣል።</p>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <input type="password" id="api-key-input" placeholder="sk-or-v1-..." style="width:100%; padding:10px; border-radius:6px; border:1px solid #1f2937; background:#0b0f19; color:#fff; outline:none;">
-                <button id="save-key-btn" style="padding:10px; background:#10b981; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Save API Key</button>
+            <p class="modal-desc">የእርስዎን የ OpenRouter API Key እዚህ ያስገቡ። ቁልፉ በምስጢር ይቀመጣል።</p>
+            <div class="modal-body">
+                <input type="password" id="api-key-input" placeholder="sk-or-v1-...">
+                <button id="save-key-btn">Save API Key</button>
             </div>
         </div>
     </div>

@@ -1,61 +1,56 @@
 const API_CONFIG = {
     ENDPOINT: 'https://openrouter.ai/api/v1/chat/completions',
     MODEL: 'google/gemini-2.5-flash',
-    SYSTEM_PROMPT: `You are EthioScholar AI, a helpful educational assistant for Ethiopian students.`
+    SYSTEM_PROMPT: 'You are EthioScholar AI, a helpful educational assistant for Ethiopian students.'
 };
 
 let conversations = JSON.parse(localStorage.getItem('ethioscholar_chats')) || [];
 let currentChatId = localStorage.getItem('ethioscholar_current_id') || null;
 
-const dom = {
-    sidebar: document.getElementById('sidebar'),
-    hamburgerBtn: document.getElementById('hamburger-btn'),
-    themeToggle: document.getElementById('theme-toggle'),
-    themeToggleMobile: document.getElementById('theme-toggle-mobile'),
-    newChatBtn: document.getElementById('new-chat-btn'),
-    clearChatsBtn: document.getElementById('clear-chats-btn'),
-    chatHistoryList: document.getElementById('chat-history-list'),
-    welcomeView: document.getElementById('welcome-view'),
-    messageStream: document.getElementById('message-stream'),
-    userInput: document.getElementById('user-input'),
-    sendBtn: document.getElementById('send-btn'),
-    charCounter: document.getElementById('char-counter'),
-    settingsModal: document.getElementById('settings-modal'),
-    openSettingsBtn: document.getElementById('open-settings-btn'),
-    closeSettingsBtn: document.getElementById('close-settings-btn'),
-    apiKeyInput: document.getElementById('api-key-input'),
-    saveKeyBtn: document.getElementById('save-key-btn'),
-    chatWindow: document.getElementById('chat-window')
-};
+// ኤለመንቶችን በደህንነት ለመያዝ
+const getEl = (id) => document.getElementById(id);
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ቼክ ለማድረግ ኤለመንቶች መኖራቸውን ማረጋገጫ
-    if (dom.hamburgerBtn) dom.hamburgerBtn.addEventListener('click', () => dom.sidebar.classList.toggle('open'));
-    if (dom.themeToggle) dom.themeToggle.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
-    if (dom.themeToggleMobile) dom.themeToggleMobile.addEventListener('click', () => document.body.classList.toggle('dark-mode'));
-    if (dom.newChatBtn) dom.newChatBtn.addEventListener('click', startNewConversation);
-    if (dom.clearChatsBtn) dom.clearChatsBtn.addEventListener('click', purgeAllConversations);
-    
-    if (dom.userInput) {
-        dom.userInput.addEventListener('input', () => {
-            dom.charCounter.textContent = `${dom.userInput.value.length} / 2000 chars`;
+    // ክሊክ ማድረጊያዎችን ማያያዝ
+    if (getEl('hamburger-btn')) {
+        getEl('hamburger-btn').addEventListener('click', () => {
+            getEl('sidebar')?.classList.toggle('open');
         });
     }
     
-    if (dom.sendBtn) dom.sendBtn.addEventListener('click', executeMessageSubmission);
-    if (dom.openSettingsBtn) dom.openSettingsBtn.addEventListener('click', () => dom.settingsModal.classList.add('open'));
-    if (dom.closeSettingsBtn) dom.closeSettingsBtn.addEventListener('click', () => dom.settingsModal.classList.remove('open'));
+    if (getEl('theme-toggle')) {
+        getEl('theme-toggle').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+    }
+    if (getEl('theme-toggle-mobile')) {
+        getEl('theme-toggle-mobile').addEventListener('click', () => document.body.classList.toggle('dark-mode'));
+    }
     
-    if (dom.saveKeyBtn) {
-        dom.saveKeyBtn.addEventListener('click', () => {
-            localStorage.setItem('ethioscholar_api_key', dom.apiKeyInput.value.trim());
+    if (getEl('new-chat-btn')) getEl('new-chat-btn').addEventListener('click', startNewConversation);
+    if (getEl('clear-chats-btn')) getEl('clear-chats-btn').addEventListener('click', purgeAllConversations);
+    
+    if (getEl('user-input')) {
+        getEl('user-input').addEventListener('input', () => {
+            if (getEl('char-counter')) {
+                getEl('char-counter').textContent = `${getEl('user-input').value.length} / 2000 chars`;
+            }
+        });
+    }
+    
+    if (getEl('send-btn')) getEl('send-btn').addEventListener('click', executeMessageSubmission);
+    if (getEl('open-settings-btn')) getEl('open-settings-btn').addEventListener('click', () => getEl('settings-modal')?.classList.add('open'));
+    if (getEl('close-settings-btn')) getEl('close-settings-btn').addEventListener('click', () => getEl('settings-modal')?.classList.remove('open'));
+    
+    if (getEl('save-key-btn')) {
+        getEl('save-key-btn').addEventListener('click', () => {
+            const keyVal = getEl('api-key-input')?.value.trim();
+            localStorage.setItem('ethioscholar_api_key', keyVal || '');
             alert('API Key Saved Successfully!');
-            dom.settingsModal.classList.remove('open');
+            getEl('settings-modal')?.classList.remove('open');
         });
     }
 
     const savedKey = localStorage.getItem('ethioscholar_api_key');
-    if (savedKey && dom.apiKeyInput) dom.apiKeyInput.value = savedKey;
+    if (savedKey && getEl('api-key-input')) getEl('api-key-input').value = savedKey;
 
     renderChatHistory();
     if (currentChatId && conversations.find(c => c.id === currentChatId)) {
@@ -66,11 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function executeMessageSubmission() {
     const key = localStorage.getItem('ethioscholar_api_key');
     if (!key) {
-        dom.settingsModal.classList.add('open');
-        return alert('Please setup your OpenRouter API Key first!');
+        getEl('settings-modal')?.classList.add('open');
+        alert('Please setup your OpenRouter API Key first!');
+        return;
     }
 
-    const queryText = dom.userInput.value.trim();
+    const queryText = getEl('user-input')?.value.trim();
     if (!queryText) return;
     
     if (!currentChatId) {
@@ -86,15 +82,15 @@ function executeMessageSubmission() {
     localStorage.setItem('ethioscholar_chats', JSON.stringify(conversations));
     renderChatHistory();
     
-    dom.userInput.value = '';
-    dom.welcomeView.style.display = 'none';
+    if (getEl('user-input')) getEl('user-input').value = '';
+    if (getEl('welcome-view')) getEl('welcome-view').style.display = 'none';
     
     const indicatorId = 'loader_' + Date.now();
     const loader = document.createElement('div');
     loader.className = 'message bot';
     loader.id = indicatorId;
     loader.innerHTML = 'Thinking...';
-    dom.messageStream.appendChild(loader);
+    getEl('message-stream')?.appendChild(loader);
     
     fetchOpenRouterAIResponse(activeChat.messages, indicatorId, key);
 }
@@ -134,32 +130,42 @@ function renderMessageBubble(msgObj) {
     const div = document.createElement('div');
     div.className = `message ${msgObj.role}`;
     div.innerHTML = `<div class="msg-body">${msgObj.content}</div>`;
-    dom.messageStream.appendChild(div);
-    dom.chatWindow.scrollTop = dom.chatWindow.scrollHeight;
+    getEl('message-stream')?.appendChild(div);
+    if (getEl('chat-window')) {
+        getEl('chat-window').scrollTop = getEl('chat-window').scrollHeight;
+    }
 }
 
 function renderChatHistory() {
-    if (!dom.chatHistoryList) return;
-    dom.chatHistoryList.innerHTML = '';
+    if (!getEl('chat-history-list')) return;
+    getEl('chat-history-list').innerHTML = '';
     conversations.forEach(chat => {
         const item = document.createElement('div');
         item.className = 'history-item';
-        item.innerHTML = `<div onclick="loadConversation('${chat.id}')">💬 ${chat.title}</div>`;
-        dom.chatHistoryList.appendChild(item);
+        item.innerHTML = `<div style="cursor:pointer;" class="history-click-target" data-id="${chat.id}">💬 ${chat.title}</div>`;
+        getEl('chat-history-list').appendChild(item);
+    });
+
+    document.querySelectorAll('.history-click-target').forEach(el => {
+        el.addEventListener('click', (e) => {
+            const cid = e.target.getAttribute('data-id');
+            if (cid) loadConversation(cid);
+        });
     });
 }
 
 function loadConversation(id) {
     currentChatId = id;
-    dom.messageStream.innerHTML = '';
-    dom.welcomeView.style.display = 'none';
-    conversations.find(c => c.id === id).messages.forEach(msg => renderMessageBubble(msg));
+    if (getEl('message-stream')) getEl('message-stream').innerHTML = '';
+    if (getEl('welcome-view')) getEl('welcome-view').style.display = 'none';
+    const chat = conversations.find(c => c.id === id);
+    if (chat) chat.messages.forEach(msg => renderMessageBubble(msg));
 }
 
 function startNewConversation() {
     currentChatId = null;
-    dom.messageStream.innerHTML = '';
-    dom.welcomeView.style.display = 'block';
+    if (getEl('message-stream')) getEl('message-stream').innerHTML = '';
+    if (getEl('welcome-view')) getEl('welcome-view').style.display = 'block';
 }
 
 function purgeAllConversations() {
